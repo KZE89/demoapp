@@ -1,0 +1,85 @@
+2017/09/08 13:54:20 [error] [system.db.CDbCommand] CDbCommand::fetchAll() failed: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'test.tbl_migration' doesn't exist. The SQL statement executed was: SHOW FULL COLUMNS FROM `tbl_migration`.
+2017/09/08 13:56:15 [error] [exception.CException] exception 'CException' with message 'm170908_095149_deployDatabase and its behaviors do not have a method or closure named "primaryKey".' in C:\OpenServer\domains\localhost\framework\base\CComponent.php:266
+Stack trace:
+#0 C:\OpenServer\domains\localhost\protected\migrations\m170908_095149_deployDatabase.php(8): CComponent->__call('primaryKey', Array)
+#1 C:\OpenServer\domains\localhost\protected\migrations\m170908_095149_deployDatabase.php(8): m170908_095149_deployDatabase->primaryKey(11)
+#2 C:\OpenServer\domains\localhost\framework\cli\commands\MigrateCommand.php(415): m170908_095149_deployDatabase->up()
+#3 C:\OpenServer\domains\localhost\framework\cli\commands\MigrateCommand.php(109): MigrateCommand->migrateUp('m170908_095149_...')
+#4 [internal function]: MigrateCommand->actionUp(Array)
+#5 C:\OpenServer\domains\localhost\framework\console\CConsoleCommand.php(172): ReflectionMethod->invokeArgs(Object(MigrateCommand), Array)
+#6 C:\OpenServer\domains\localhost\framework\console\CConsoleCommandRunner.php(71): CConsoleCommand->run(Array)
+#7 C:\OpenServer\domains\localhost\framework\console\CConsoleApplication.php(92): CConsoleCommandRunner->run(Array)
+#8 C:\OpenServer\domains\localhost\framework\base\CApplication.php(185): CConsoleApplication->processRequest()
+#9 C:\OpenServer\domains\localhost\framework\yiic.php(33): CApplication->run()
+#10 C:\OpenServer\domains\localhost\protected\yiic.php(7): require_once('C:\OpenServer\d...')
+#11 {main}
+---
+2017/09/08 13:59:28 [error] [exception.CException] exception 'CException' with message 'm170908_095149_deployDatabase and its behaviors do not have a method or closure named "smallInteger".' in C:\OpenServer\domains\localhost\framework\base\CComponent.php:266
+Stack trace:
+#0 C:\OpenServer\domains\localhost\protected\migrations\m170908_095149_deployDatabase.php(20): CComponent->__call('smallInteger', Array)
+#1 C:\OpenServer\domains\localhost\protected\migrations\m170908_095149_deployDatabase.php(20): m170908_095149_deployDatabase->smallInteger(8)
+#2 C:\OpenServer\domains\localhost\framework\cli\commands\MigrateCommand.php(415): m170908_095149_deployDatabase->up()
+#3 C:\OpenServer\domains\localhost\framework\cli\commands\MigrateCommand.php(109): MigrateCommand->migrateUp('m170908_095149_...')
+#4 [internal function]: MigrateCommand->actionUp(Array)
+#5 C:\OpenServer\domains\localhost\framework\console\CConsoleCommand.php(172): ReflectionMethod->invokeArgs(Object(MigrateCommand), Array)
+#6 C:\OpenServer\domains\localhost\framework\console\CConsoleCommandRunner.php(71): CConsoleCommand->run(Array)
+#7 C:\OpenServer\domains\localhost\framework\console\CConsoleApplication.php(92): CConsoleCommandRunner->run(Array)
+#8 C:\OpenServer\domains\localhost\framework\base\CApplication.php(185): CConsoleApplication->processRequest()
+#9 C:\OpenServer\domains\localhost\framework\yiic.php(33): CApplication->run()
+#10 C:\OpenServer\domains\localhost\protected\yiic.php(7): require_once('C:\OpenServer\d...')
+#11 {main}
+---
+2017/09/08 14:00:19 [error] [system.db.CDbCommand] CDbCommand::fetchAll() failed: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'test.tbl_migration' doesn't exist. The SQL statement executed was: SHOW FULL COLUMNS FROM `tbl_migration`.
+2017/09/08 14:00:21 [error] [system.db.CDbCommand] CDbCommand::execute() failed: SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'users' already exists. The SQL statement executed was: CREATE TABLE `users` (
+	`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`name` nvarchar(40) NOT NULL,
+	`email` nvarchar(40) NOT NULL,
+	`activationLink` nvarchar(64) NOT NULL,
+	`apiLink` nvarchar(96) NOT NULL,
+	`lastVisit` datetime NOT NULL,
+	`updatedAt` datetime NOT NULL,
+	`registiredAt` datetime NOT NULL
+).
+2017/09/08 14:00:21 [error] [exception.CDbException] exception 'CDbException' with message 'CDbCommand failed to execute the SQL statement: SQLSTATE[42S01]: Base table or view already exists: 1050 Table 'users' already exists. The SQL statement executed was: CREATE TABLE `users` (
+	`id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	`name` nvarchar(40) NOT NULL,
+	`email` nvarchar(40) NOT NULL,
+	`activationLink` nvarchar(64) NOT NULL,
+	`apiLink` nvarchar(96) NOT NULL,
+	`lastVisit` datetime NOT NULL,
+	`updatedAt` datetime NOT NULL,
+	`registiredAt` datetime NOT NULL
+)' in C:\OpenServer\domains\localhost\framework\db\CDbCommand.php:358
+Stack trace:
+#0 C:\OpenServer\domains\localhost\framework\db\CDbCommand.php(1352): CDbCommand->execute()
+#1 C:\OpenServer\domains\localhost\framework\db\CDbMigration.php(250): CDbCommand->createTable('users', Array, NULL)
+#2 C:\OpenServer\domains\localhost\protected\migrations\m170908_095149_deployDatabase.php(18): CDbMigration->createTable('users', Array)
+#3 C:\OpenServer\domains\localhost\framework\cli\commands\MigrateCommand.php(415): m170908_095149_deployDatabase->up()
+#4 C:\OpenServer\domains\localhost\framework\cli\commands\MigrateCommand.php(109): MigrateCommand->migrateUp('m170908_095149_...')
+#5 [internal function]: MigrateCommand->actionUp(Array)
+#6 C:\OpenServer\domains\localhost\framework\console\CConsoleCommand.php(172): ReflectionMethod->invokeArgs(Object(MigrateCommand), Array)
+#7 C:\OpenServer\domains\localhost\framework\console\CConsoleCommandRunner.php(71): CConsoleCommand->run(Array)
+#8 C:\OpenServer\domains\localhost\framework\console\CConsoleApplication.php(92): CConsoleCommandRunner->run(Array)
+#9 C:\OpenServer\domains\localhost\framework\base\CApplication.php(185): CConsoleApplication->processRequest()
+#10 C:\OpenServer\domains\localhost\framework\yiic.php(33): CApplication->run()
+#11 C:\OpenServer\domains\localhost\protected\yiic.php(7): require_once('C:\OpenServer\d...')
+#12 {main}
+---
+2017/09/08 14:01:16 [error] [system.db.CDbCommand] CDbCommand::fetchAll() failed: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'test.tbl_migration' doesn't exist. The SQL statement executed was: SHOW FULL COLUMNS FROM `tbl_migration`.
+2017/09/08 14:01:17 [error] [exception.CException] exception 'CException' with message 'm170908_095149_deployDatabase and its behaviors do not have a method or closure named "smallInteger".' in C:\OpenServer\domains\localhost\framework\base\CComponent.php:266
+Stack trace:
+#0 C:\OpenServer\domains\localhost\protected\migrations\m170908_095149_deployDatabase.php(20): CComponent->__call('smallInteger', Array)
+#1 C:\OpenServer\domains\localhost\protected\migrations\m170908_095149_deployDatabase.php(20): m170908_095149_deployDatabase->smallInteger(8)
+#2 C:\OpenServer\domains\localhost\framework\cli\commands\MigrateCommand.php(415): m170908_095149_deployDatabase->up()
+#3 C:\OpenServer\domains\localhost\framework\cli\commands\MigrateCommand.php(109): MigrateCommand->migrateUp('m170908_095149_...')
+#4 [internal function]: MigrateCommand->actionUp(Array)
+#5 C:\OpenServer\domains\localhost\framework\console\CConsoleCommand.php(172): ReflectionMethod->invokeArgs(Object(MigrateCommand), Array)
+#6 C:\OpenServer\domains\localhost\framework\console\CConsoleCommandRunner.php(71): CConsoleCommand->run(Array)
+#7 C:\OpenServer\domains\localhost\framework\console\CConsoleApplication.php(92): CConsoleCommandRunner->run(Array)
+#8 C:\OpenServer\domains\localhost\framework\base\CApplication.php(185): CConsoleApplication->processRequest()
+#9 C:\OpenServer\domains\localhost\framework\yiic.php(33): CApplication->run()
+#10 C:\OpenServer\domains\localhost\protected\yiic.php(7): require_once('C:\OpenServer\d...')
+#11 {main}
+---
+2017/09/08 14:02:48 [error] [system.db.CDbCommand] CDbCommand::fetchAll() failed: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'test.tbl_migration' doesn't exist. The SQL statement executed was: SHOW FULL COLUMNS FROM `tbl_migration`.
+2017/09/08 14:18:16 [error] [system.db.CDbCommand] CDbCommand::fetchAll() failed: SQLSTATE[42S02]: Base table or view not found: 1146 Table 'test.tbl_migration' doesn't exist. The SQL statement executed was: SHOW FULL COLUMNS FROM `tbl_migration`.

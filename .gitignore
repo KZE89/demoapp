@@ -1,0 +1,5 @@
+demos/*
+framework/*
+requirements/*
+vendor/*
+protected/config/database.php

@@ -1,0 +1,10 @@
+{
+    "name": "demoapp",
+    "require": {  
+        "yiisoft/yii": "1.1.19",
+        "codeception/codeception": "2.1.*"
+    } ,
+    "config":{
+        "vendor-dir": "www/protected/vendor"
+    }
+}
