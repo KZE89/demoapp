@@ -8,7 +8,6 @@
  * @property string $name
  * @property string $email
  * @property string $balance
- * @property string $activationLink
  * @property string $apiLink
  * @property string $lastVisit
  * @property string $updatedAt
@@ -16,6 +15,8 @@
  */
 class Users extends CActiveRecord
 {
+	private static $bonus = 1000.00;
+	
 	/**
 	 * @return string the associated database table name
 	 */
@@ -32,14 +33,13 @@ class Users extends CActiveRecord
 		// NOTE: you should only define rules for those attributes that
 		// will receive user inputs.
 		return array(
-			array('name, email, balance, activationLink, apiLink, lastVisit, updatedAt, registiredAt', 'required'),
+			array('name, email, balance, apiLink, lastVisit, updatedAt, registiredAt', 'required'),
 			array('name, email', 'length', 'max'=>40),
-			array('balance', 'length', 'max'=>15),
-			array('activationLink', 'length', 'max'=>64),
-			array('apiLink', 'length', 'max'=>96),
+			//array('balance', 'length', 'max'=>15),
+			array('apiLink', 'length', 'max'=>180),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
-			array('id, name, email, balance, activationLink, apiLink, lastVisit, updatedAt, registiredAt', 'safe', 'on'=>'search'),
+			array('id, name, email, balance, apiLink, lastVisit, updatedAt, registiredAt', 'safe', 'on'=>'search'),
 		);
 	}
 
@@ -64,12 +64,78 @@ class Users extends CActiveRecord
 			'name' => 'Name',
 			'email' => 'Email',
 			'balance' => 'Balance',
-			'activationLink' => 'Activation Link',
 			'apiLink' => 'Api Link',
 			'lastVisit' => 'Last Visit',
 			'updatedAt' => 'Updated At',
 			'registiredAt' => 'Registired At',
 		);
+	}
+	
+	/**
+	 * Наполняет модель данными для нвого пользователя.
+	 * @param string $email E-mail адрес пользователя.
+	 */
+	
+	public function createNewUser($email)
+	{
+		$this->name = 'New User';
+		$this->email = $email;
+		$this->balance = 0.00;
+		$this->apiLink = Users :: generateApiLink();
+		$this->lastVisit = date("Y-m-d H:i:s");
+		$this->updatedAt = date("Y-m-d H:i:s");
+		$this->registiredAt = date("Y-m-d H:i:s");
+		$this->save();
+		
+		$balance = new BalanceHistory();
+		$balance->makeOperation($this->id, Users :: $bonus);
+	}
+	
+	/**
+	 * Задает дату последнего входа
+	 */
+	
+	public function setLastVisit()
+	{
+		$this->lastVisit = date("Y-m-d H:i:s");
+	}
+	
+	/**
+	 * Задает дату изменений в аккаунте
+	 */
+	
+	public function setUpdatedAt()
+	{
+		$this->updatedAt = date("Y-m-d H:i:s");
+	}
+	
+	/**
+	 * Генерирует API-ключ.
+	 * @return string API-ключ
+	 */
+	
+	public function generateApiLink()
+	{
+		return CPasswordHelper::hashPassword($this->email) . CPasswordHelper::hashPassword($this->registiredAt) . CPasswordHelper::hashPassword('salt');
+	}
+	/**
+	 * Проверяет существует ли пользователь с указанным адресом E-mail.
+	 * @return bool true|false
+	*/
+	public function isExist($email)
+	{
+		$criteria=new CDbCriteria;
+		$criteria->select='*'; 
+		$criteria->condition='email=:email';
+		$criteria->params=array(':email'=>$email);
+		$user=Users::model()->find($criteria);
+		
+		if($user === NULL)
+		{
+			return false;
+		}
+		
+		return true;
 	}
 
 	/**

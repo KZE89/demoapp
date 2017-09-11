@@ -59,6 +59,25 @@ class BalanceHistory extends CActiveRecord
 			'operationDateTime' => 'Operation Date Time',
 		);
 	}
+	
+	/**
+	 * Проводит операции с балансом пользователя.
+	 * @param integer $userId ID пользователя.
+	 * @param decimal $value сумма операции (положительная прибавление, отрицательная убавление баланса).
+	 */
+	
+	public function makeOperation($userId, $value)
+	{
+		//Регистрации операции в логе (истории) операций
+		$this->userId = $userId;
+		$this->value = $value;
+		$this->operationDateTime = date("Y-m-d H:i:s");
+		$this->save();
+		//Изменение баланса пользователя
+		$user = Users::model()->findByAttributes(array('id' => $userId));
+		$user->balance += $value;
+		$user->save();
+	}
 
 	/**
 	 * Retrieves a list of models based on the current search/filter conditions.

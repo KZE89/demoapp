@@ -47,55 +47,40 @@ class SiteController extends Controller
 	}
 
 	/**
-	 * Displays the contact page
-	 */
-	public function actionContact()
-	{
-		$model=new ContactForm;
-		if(isset($_POST['ContactForm']))
-		{
-			$model->attributes=$_POST['ContactForm'];
-			if($model->validate())
-			{
-				$name='=?UTF-8?B?'.base64_encode($model->name).'?=';
-				$subject='=?UTF-8?B?'.base64_encode($model->subject).'?=';
-				$headers="From: $name <{$model->email}>\r\n".
-					"Reply-To: {$model->email}\r\n".
-					"MIME-Version: 1.0\r\n".
-					"Content-Type: text/plain; charset=UTF-8";
-
-				mail(Yii::app()->params['adminEmail'],$subject,$model->body,$headers);
-				Yii::app()->user->setFlash('contact','Thank you for contacting us. We will respond to you as soon as possible.');
-				$this->refresh();
-			}
-		}
-		$this->render('contact',array('model'=>$model));
-	}
-
-	/**
-	 * Displays the login page
+	 * Action, реализующий процесс авторизации
 	 */
 	public function actionLogin()
 	{
-		$model=new LoginForm;
-
-		// if it is ajax validation request
-		if(isset($_POST['ajax']) && $_POST['ajax']==='login-form')
+		if(Yii::app()->user->isGuest)
 		{
-			echo CActiveForm::validate($model);
-			Yii::app()->end();
-		}
+			$model=new LoginModel;
 
-		// collect user input data
-		if(isset($_POST['LoginForm']))
-		{
-			$model->attributes=$_POST['LoginForm'];
-			// validate user input and redirect to the previous page if valid
-			if($model->validate() && $model->login())
-				$this->redirect(Yii::app()->user->returnUrl);
+			// if it is ajax validation request
+			if(isset($_POST['ajax']) && $_POST['ajax']==='login-form')
+			{
+				echo CActiveForm::validate($model);
+				Yii::app()->end();
+			}
+
+			// Сбор данных из ссылки авторизации
+			if(isset($_GET))
+			{
+				$model->attributes=$_GET;
+				// Валидация модели и авторизация
+				if($model->validate() && $model->login())
+				{
+					//Перенаправление в личный кабинет
+					$this->redirect('index.php?site/account');
+				}
+			}
+
+			$this->redirect('index.php?r=site/page&view=urlError');
 		}
-		// display the login form
-		$this->render('login',array('model'=>$model));
+		else
+		{
+			//Перенаправление в личный кабинет
+			$this->redirect('index.php?site/account');
+		}
 	}
 
 	/**
@@ -105,5 +90,71 @@ class SiteController extends Controller
 	{
 		Yii::app()->user->logout();
 		$this->redirect(Yii::app()->homeUrl);
+	}
+	
+	/**
+	 * Action, личный кабинет
+	 */
+	public function actionAccount()
+	{
+		$user = Users::model()->findByAttributes(array('id' => Yii::app()->user->id));
+		
+		if(!Yii::app()->user->isGuest)
+		{
+			$this->render('account',array('model'=>$user));
+		}
+		else
+		{
+			$this->redirect('index.php?r=site/register');
+		}
+	}
+	
+	/**
+	* Action, реализующий процесс регистрации
+	*/
+	
+	public function actionRegister()
+	{
+		if(Yii::app()->user->isGuest)
+		{
+			$model = new RegisterForm;
+			
+			if(isset($_POST['ajax']) && $_POST['ajax']==='login-form')
+			{
+				echo CActiveForm::validate($model);
+				Yii::app()->end();
+			}
+
+			// collect user input data
+			if(isset($_POST['RegisterForm']))
+			{
+				
+				$model->attributes=$_POST['RegisterForm'];
+				// Валидация входных данных для модели
+				if($model->validate())
+					//$this->redirect(Yii::app()->user->returnUrl);
+					//Создаем экземпляр класса модели ActivationLink
+					$link = new ActivationLink();
+					//Загружаем аттрибуты
+					$link->attributes=$_POST['RegisterForm'];
+					//Удаляем все ссылки из БД, перед формированием новой ссылки
+					$link->deleteLinks();
+					//Формируем новую ссылку
+					$link->generateLink();
+					//Сохраняем в БД
+					$link->save();
+					//Отправляем по почте
+					$link->sendByEmail();
+					//Перенаправление на страницу об успешной регистрации
+					$this->redirect('index.php?r=site/page&view=registered');
+			}
+			// выводим форму регистрации
+			$this->render('register',array('model'=>$model));
+		}
+		else
+		{
+			//Перенаправление в личный кабинет
+			$this->redirect('index.php?r=site/account');
+		}
 	}
 }

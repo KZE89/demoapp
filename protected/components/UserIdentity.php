@@ -31,20 +31,41 @@ class UserIdentity extends CUserIdentity
 class UserIdentity extends CUserIdentity
 {
     private $_id;
+	public $email;
+	public $hashString;
+	
     public function authenticate()
     {
-        $record=User::model()->findByAttributes(array('email'=>$this->email));
-        if($record===null)
-            $this->errorCode=self::ERROR_USERNAME_INVALID;
-        else if(!CPasswordHelper::verifyPassword($this->password,$record->password))
-            $this->errorCode=self::ERROR_PASSWORD_INVALID;
-        else
-        {
-            $this->_id=$record->id;
-            $this->setState('title', $record->title);
-            $this->errorCode=self::ERROR_NONE;
-        }
-        return !$this->errorCode;
+		//Поиск ссылки авторизации
+		$activationLink = ActivationLink::model()->findByAttributes(array('email' => $this->email, 'hashString' => $this->hashString));
+		//Поиск пользователя
+        $user = Users::model()->findByAttributes(array('email' => $this->email));
+		
+		//Если ссылка не найдена
+		if($activationLink === NULL)
+		{
+			//Не авторизуем
+			return NULL;
+		}
+		else
+		{
+			//Если у пользователя нет аккаунта
+			if($user === NULL)
+			{
+				//Создаем нового пользователя
+				$newUser = new Users();
+				$newUser->createNewUser($this->email);
+				$this->_id = $newUser->id;
+			}
+			else
+			{
+				$this->_id = $user->id;
+				$user->setLastVisit();
+			}
+			//Авторизуем пользователя
+			$this->errorCode=self::ERROR_NONE;	
+			$activationLink->deleteLinks();
+		}
     }
  
     public function getId()
