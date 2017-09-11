@@ -103,10 +103,10 @@ class API extends CModel
 		$balance = new BalanceHistory();
         //Переводим число в положительное
         $this->value = $this->value < 0 ? (-$this->value) : $this->value;
-		//Если сумма это дробное или целое число
-        if(!is_float($this->value) or !is_int($this->value))
+		//Если сумма это дробное число
+        if(!is_float(floatval($this->value)))
         {
-            $this->message = "Ошибка: Параметр суммы не является числом";
+            $this->message = "Ошибка: Параметр суммы не является дробным числом";
         }
         //Если баланс не нулевой
 		else if(floatval($this->user->balance) <= 0.00)

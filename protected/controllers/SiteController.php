@@ -209,8 +209,8 @@ class SiteController extends Controller
 					//Сохраняем в БД
 					$model->save();
 			}
-			// выводим страницу аккаунта
-			$this->render('account',array('model'=>$model));
+			// Перенаправляем страницу аккаунта
+			$this->redirect('index.php?r=site/account');
 		}
 		else
 		{
