@@ -27,21 +27,24 @@ class ApiController extends Controller
 	 */
 	public function actionIndex()
 	{
-		header('Content-type: application/json');
-
+        //Отправляем заголовки с типом данных и кодировкой
+		header('Content-type: application/json; charset=utf-8');
+        //если ссылка содержит какие-либо параметры
 		if(isset($_GET))
 		{
+                //Создаем экземпляр класса модели API
 				$API = new API();
+                //Загружаем данные из ссылки
 				$API->attributes=$_GET;
 
 				// Валидация модели и авторизация
 				if($API->validate() )
 				{
+                    //Проверка ключа на валидность
 					if($API->keyIsValid())
 					{
-						//var_dump($API);
+                        //Запуск необходимой операции
 						$API->execOperation();
-						$API->responseJSON();
 					}
 					else
 					{
@@ -57,9 +60,9 @@ class ApiController extends Controller
 		{
 			$API->message = "Ошибка: Не верный запрос к API";
 		}
-		
-		
-
+        //Вывод результата запроса
+        echo $API->responseJSON();
+        
 		Yii::app()->end();
 	}
 

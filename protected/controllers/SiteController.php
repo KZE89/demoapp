@@ -62,9 +62,10 @@ class SiteController extends Controller
 				Yii::app()->end();
 			}
 
-			// Сбор данных из ссылки авторизации
+			// Проверка наличия данных в ссылке авторизации
 			if(isset($_GET))
 			{
+                //Сбор данных из ссылки
 				$model->attributes=$_GET;
 				// Валидация модели и авторизация
 				if($model->validate() && $model->login())
@@ -73,7 +74,7 @@ class SiteController extends Controller
 					$this->redirect('index.php?site/account');
 				}
 			}
-
+            //Перенаправление на страницу с ошибкой
 			$this->redirect('index.php?r=site/page&view=urlError');
 		}
 		else
@@ -81,14 +82,25 @@ class SiteController extends Controller
 			//Перенаправление в личный кабинет
 			$this->redirect('index.php?site/account');
 		}
+        
+        //Перенаправление в личный кабинет
+        $this->redirect('index.php?site/account');
 	}
 
 	/**
-	 * Logs out the current user and redirect to homepage.
+	 * Action, реализующий выход из учетной записи
 	 */
 	public function actionLogout()
 	{
-		Yii::app()->user->logout();
+        //Находим модель пользователя по текущему id
+        $user = Users::model()->findByAttributes(array('id' => Yii::app()->user->id));
+        //Выход из учетной записи
+        Yii::app()->user->logout();
+        //Устанавливаем дату последнего визита пользователя
+        $user->setLastVisit();
+        //Сохраняем данные в БД
+        $user->save();
+        //Перенаправление на домашнюю страницу
 		$this->redirect(Yii::app()->homeUrl);
 	}
 	
@@ -97,14 +109,21 @@ class SiteController extends Controller
 	 */
 	public function actionAccount()
 	{
+        //Находим модель пользователя по текущему id
 		$user = Users::model()->findByAttributes(array('id' => Yii::app()->user->id));
-		
+        //Создаем экземпляр класса модели истории баланса пользователя
+		$balanceHistory = new BalanceHistory();
+        //Берем последние 10 операций баланса пользователя по текущему id
+        $lastOperations = $balanceHistory->getLast10(Yii::app()->user->id);
+		//Если пользователь авторизован
 		if(!Yii::app()->user->isGuest)
 		{
-			$this->render('account',array('model'=>$user));
+            //Выводим страницу с учетной записью
+			$this->render('account',array('model'=>$user, 'balance' => $lastOperations));
 		}
 		else
 		{
+            //Перенаправление на страницу регистрации
 			$this->redirect('index.php?r=site/register');
 		}
 	}
@@ -115,6 +134,7 @@ class SiteController extends Controller
 	
 	public function actionRegister()
 	{
+        //Если пользователь не авторизован
 		if(Yii::app()->user->isGuest)
 		{
 			$model = new RegisterForm;
@@ -157,4 +177,46 @@ class SiteController extends Controller
 			$this->redirect('index.php?r=site/account');
 		}
 	}
+    
+    /**
+	* Action, реализующий процесс редактирования данных учетной записи
+	*/
+    
+    public function actionEdit()
+    {
+        //Если пользователь авторизован
+        if(!Yii::app()->user->isGuest)
+		{
+			$model = new Users();
+			
+			if(isset($_POST['ajax']) && $_POST['ajax']==='account-form')
+			{
+				echo CActiveForm::validate($model);
+				Yii::app()->end();
+			}
+
+            // collect user input data
+			if(isset($_POST['Users']))
+			{
+                //Находим модель пользователя по текущему id
+                $model = Users::model()->findByAttributes(array('id' => Yii::app()->user->id));
+				//Загружаем данные
+                $model->attributes=$_POST['Users'];
+				// Валидация входных данных для модели
+				if($model->validate())
+                    //Устанавливаем дату изменения данных пользователя
+					$model->setUpdatedAt();
+					//Сохраняем в БД
+					$model->save();
+			}
+			// выводим страницу аккаунта
+			$this->render('account',array('model'=>$model));
+		}
+		else
+		{
+			//Перенаправление на страницу регистрации
+			$this->redirect('index.php?r=site/register');
+		}
+    }
+
 }

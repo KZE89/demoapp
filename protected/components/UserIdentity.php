@@ -6,26 +6,6 @@
  * data can identity the user.
  */
 
-/*
-class UserIdentity extends CUserIdentity
-{
-	public function authenticate()
-	{
-		$users=array(
-			// username => password
-			'demo'=>'demo',
-			'admin'=>'admin',
-		);
-		if(!isset($users[$this->username]))
-			$this->errorCode=self::ERROR_USERNAME_INVALID;
-		elseif($users[$this->username]!==$this->password)
-			$this->errorCode=self::ERROR_PASSWORD_INVALID;
-		else
-			$this->errorCode=self::ERROR_NONE;
-		return !$this->errorCode;
-	}
-}*/
-
 /*Класс авторизации*/
 
 class UserIdentity extends CUserIdentity
@@ -60,10 +40,13 @@ class UserIdentity extends CUserIdentity
 			else
 			{
 				$this->_id = $user->id;
+                //Устанавливаем дату последнего визита ля пользователя
 				$user->setLastVisit();
+                $user->save();
 			}
 			//Авторизуем пользователя
 			$this->errorCode=self::ERROR_NONE;	
+            //Удаляем все ссылки авторизации в БД для данного пользователя
 			$activationLink->deleteLinks();
 		}
     }

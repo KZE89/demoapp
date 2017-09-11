@@ -44,20 +44,29 @@ class API extends CModel
 		);
 	}
 	
+    /**
+     * Метод для проверки ключа API в БД
+	 * @return boolean true|false
+	 */
+    
 	public function keyIsValid()
 	{
 		//Получеам пользователя по ключу API
 		$user = Users::model()->findByAttributes(array('apiLink' => $this->apiKey));
-		
+		//Если пользователь существует
 		if($user!== NULL)
 		{
+            //Если API-ключ существует
 			if($user->apiLink !== NULL)
 			{
+                //присваиваем к текущему экземпляру API данного пользователя
 				$this->user = $user;
+                //Ключ валидный
 				return true;
 			}
 			else
 			{
+                //Иначу ключ не корректен
 				return false;
 			}
 		}
@@ -66,41 +75,68 @@ class API extends CModel
 		
 	}
 	
+    /**
+     * Метод для запуска операции API
+	 * @return nothing
+	 */
+    
 	public function execOperation()
 	{
-		
+		//Переключатель на выбранную операцию
 		switch($this->operation)
 		{
-			case API::$WRITE_OFF_BALANCE: $this->WRITE_OFF_BALANCE();
-			default: $this->message = "Ошибка: Операции " . $this->operation. " не существует";
+			case API::$WRITE_OFF_BALANCE: $this->WRITE_OFF_BALANCE(); break;
+            //Если операция не найдена, возвращаем ошибку
+			default: $this->message = "Ошибка: Операции " . $this->operation. " не существует"; break;
 		}
 		
 	}
-		
+    
+	 /**
+     * Метод API для списания суммы
+	 * @return nothing
+	 */	
 	public function WRITE_OFF_BALANCE()
 	{
-
+        
+        //Создаем модель истории баланса
 		$balance = new BalanceHistory();
-		
-		if(floatval($this->user->balance) <= 0.00)
+        //Переводим число в положительное
+        $this->value = $this->value < 0 ? (-$this->value) : $this->value;
+		//Если сумма это дробное или целое число
+        if(!is_float($this->value) or !is_int($this->value))
+        {
+            $this->message = "Ошибка: Параметр суммы не является числом";
+        }
+        //Если баланс не нулевой
+		else if(floatval($this->user->balance) <= 0.00)
 		{
 			$this->message = "Ошибка: Недостаточно средств на счете";
 		}
-		else if(floatval($this->value) >= floatval($this->user->balance))
+        //если сумма списания больше суммы баланса
+		else if(floatval($this->value) > floatval($this->user->balance))
 		{
 			$this->message = "Ошибка: Превышена допустимая сумма вывода";
 		}
+        //иначе
 		else
 		{
+            //Производим операцию списания
 			$balance->makeOperation($this->user->id, $this->value);
+            //выводим сообщение об успешно провденной операции списания
 			$this->message = "Успешно: Сумма в размере ". $this->value ." списана со счета";
 		}
 
 	}
+    
+     /**
+     * Метод API для вывода сообщений в формате JSON
+	 * @return string сообщение в формате JSON
+	 */
 	
 	public function responseJSON()
 	{
-		echo CJSON::encode($this->message);
+		return CJSON::encode($this->message);
 	}
 	
 	/**

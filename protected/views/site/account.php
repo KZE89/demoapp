@@ -1,6 +1,7 @@
 <?php
 /* @var $this SiteController */
-/* @var $model LoginForm */
+/* @var $model Users */
+/* @var $balance BalanceHistory */
 /* @var $form CActiveForm  */
 
 $this->pageTitle=Yii::app()->name . ' - Личный кабинет';
@@ -16,6 +17,7 @@ $this->breadcrumbs=array(
 <div class="form">
 <?php $form=$this->beginWidget('CActiveForm', array(
 	'id'=>'account-form',
+    'action'=>'index.php?r=site/edit',
 	'enableClientValidation'=>true,
 	'clientOptions'=>array(
 		'validateOnSubmit'=>true,
@@ -66,8 +68,27 @@ $this->breadcrumbs=array(
 	<div class="row buttons">
 		<?php echo CHtml::submitButton('Редактировать'); ?>
 	</div>
+    
+    <p>Последние операции по балансу (не более 10):</p>
+    
+    <?php 
+        
+        if($balance === NULL)
+        {
+            echo "<b>Нет операций</b>";
+        }
+        else
+        {
+            echo "<ul>";
+            foreach($balance as $value)
+             {
+                echo "<li>" . $value->operationDateTime . " | " . $value->value . "</li>"; 
+             }
+            echo "</ul>";
+        }
+    ?>
 	
 	<?php echo CHtml::link('Выйти',array('site/logout')); ?>
-
+    
 <?php $this->endWidget(); ?>
 </div><!-- form -->

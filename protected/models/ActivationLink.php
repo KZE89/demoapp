@@ -1,9 +1,9 @@
 <?php
 
 /**
- * This is the model class for table "activationLinks".
+ * Класс модели для таблицу "activationLinks".
  *
- * The followings are the available columns in table 'activationLinks':
+ * Аттрибуты модели таблицы 'activationLinks':
  * @property integer $id
  * @property string $email
  * @property string $hashString
@@ -11,8 +11,6 @@
  */
 class ActivationLink extends CActiveRecord
 {
-	
-	private static $site = 'http://demoapp/index.php?r=site/login&hashString=';
 	
 	/**
 	 * @return string the associated database table name
@@ -114,7 +112,7 @@ class ActivationLink extends CActiveRecord
 		
 		$to = $this->email;
 		$subject = 'Ссылка для входа на сайт DemoApp';
-		$message = 'Ссылка для входа на сайт DemoApp: ' . ActivationLink :: $site . $this->hashString .'&email=' . $this->email;
+		$message = "Ссылка для входа на сайт DemoApp: http://" . Yii::app()->getRequest()->serverName . "/index.php?r=site/login&hashString=" . $this->hashString .'&email=' . $this->email;
 		$headers = 'From: webmaster@example.com' . "\r\n" .
 			'Reply-To: webmaster@example.com' . "\r\n" .
 			'X-Mailer: PHP/' . phpversion();

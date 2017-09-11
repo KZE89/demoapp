@@ -70,13 +70,41 @@ class BalanceHistory extends CActiveRecord
 	{
 		//Регистрации операции в логе (истории) операций
 		$this->userId = $userId;
-		$this->value = $value;
+		$this->value = (-$value);
 		$this->operationDateTime = date("Y-m-d H:i:s");
 		$this->save();
 		//Изменение баланса пользователя
 		$user = Users::model()->findByAttributes(array('id' => $userId));
-		$user->balance += $value;
+		$user->balance -= $value;
 		$user->save();
+	}
+    
+    
+    	/**
+	 * Возвращает 10 последних операций по балансу пользователя.
+	 * @param integer $userId ID пользователя.
+	 * @param decimal $value сумма операции (положительная прибавление, отрицательная убавление баланса).
+     * @return BalanceHistory model class or false
+	 */
+	
+	public function getLast10($userId)
+	{
+		//Поиск операций по балансу пользователя по его ID
+		$criteria=new CDbCriteria;
+		$criteria->select='*'; 
+		$criteria->condition='userId=:userId';
+		$criteria->params=array(':userId'=>$userId);
+        $criteria->limit = 10;
+        $criteria->offset = 0;
+        $criteria->order = 'operationDateTime DESC';
+		$balanceHistory = BalanceHistory::model()->findAll($criteria);
+		
+		if($balanceHistory === NULL)
+		{
+			return false;
+		}
+		
+		return $balanceHistory;
 	}
 
 	/**

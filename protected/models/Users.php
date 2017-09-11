@@ -35,8 +35,8 @@ class Users extends CActiveRecord
 		return array(
 			array('name, email, balance, apiLink, lastVisit, updatedAt, registiredAt', 'required'),
 			array('name, email', 'length', 'max'=>40),
-			//array('balance', 'length', 'max'=>15),
 			array('apiLink', 'length', 'max'=>180),
+            array('id', 'safe'),
 			// The following rule is used by search().
 			// @todo Please remove those attributes that should not be searched.
 			array('id, name, email, balance, apiLink, lastVisit, updatedAt, registiredAt', 'safe', 'on'=>'search'),
@@ -86,7 +86,7 @@ class Users extends CActiveRecord
 		$this->updatedAt = date("Y-m-d H:i:s");
 		$this->registiredAt = date("Y-m-d H:i:s");
 		$this->save();
-		
+		//Добавляем бонус 1000 у.е для ногвого пользователя
 		$balance = new BalanceHistory();
 		$balance->makeOperation($this->id, Users :: $bonus);
 	}

@@ -44,16 +44,21 @@ class LoginModel extends CModel
 	 */
 	public function login()
 	{
+        //Если пользователь не авторизован
 		if($this->_identity===null)
 		{
+            //Создаем модель авторизации
 			$this->_identity=new UserIdentity('', '');
+            //Передаем данные для авторизации из ссылки
 			$this->_identity->email = $this->email;
 			$this->_identity->hashString = $this->hashString;
-			
+			//Проверяем данные с БД
 			$this->_identity->authenticate();
 		}
+        //Если авторизация прошла успешно
 		if($this->_identity->errorCode===UserIdentity::ERROR_NONE)
 		{
+            //Заводим сессию
 			$duration=3600*24*30; // 30 days
 			Yii::app()->user->login($this->_identity,$duration);
 			return true;
