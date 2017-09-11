@@ -80,15 +80,18 @@ class Users extends CActiveRecord
 	{
 		$this->name = 'New User';
 		$this->email = $email;
-		$this->balance = 0.00;
+		$this->balance = 1000.00;
 		$this->apiLink = Users :: generateApiLink();
 		$this->lastVisit = date("Y-m-d H:i:s");
 		$this->updatedAt = date("Y-m-d H:i:s");
 		$this->registiredAt = date("Y-m-d H:i:s");
 		$this->save();
-		//Добавляем бонус 1000 у.е для ногвого пользователя
+		//Добавляем бонус 1000 у.е для нового пользователя
 		$balance = new BalanceHistory();
-		$balance->makeOperation($this->id, Users :: $bonus);
+		$balance->userId = $this->id;
+        $balance->value = 1000.00;
+        $balance->operationDateTime = date("Y-m-d H:i:s");
+        $balance->save();
 	}
 	
 	/**
